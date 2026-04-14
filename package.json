@@ -1,0 +1,21 @@
+{
+  "name": "plumb-iq-remotion",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "npx remotion studio",
+    "build": "npx remotion lambda sites create src/index.ts --site-name=plumb-iq",
+    "deploy:lambda": "npx remotion lambda functions deploy --memory=3008 --timeout=240 --retries=1"
+  },
+  "dependencies": {
+    "@remotion/transitions": "4.0.290",
+    "remotion": "4.0.290",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@remotion/lambda": "4.0.290",
+    "@remotion/cli": "4.0.290",
+    "@types/react": "18.2.0",
+    "typescript": "5.3.3"
+  }
+}
