@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "start": "npx remotion studio",
-    "build": "npx remotion lambda sites create src/index.ts --site-name=plumb-iq",
-    "deploy:lambda": "npx remotion lambda functions deploy --memory=3008 --timeout=240 --retries=1"
+    "deploy:site": "npx remotion lambda sites create src/index.ts --site-name=plumb-iq",
+    "deploy:lambda": "npx remotion lambda functions deploy --memory=3008 --disk=2048 --timeout=900 --retries=1 --region=us-east-1",
+    "deploy": "npm run deploy:site && npm run deploy:lambda"
   },
   "dependencies": {
     "@remotion/transitions": "4.0.290",
