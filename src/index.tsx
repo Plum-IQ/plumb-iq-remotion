@@ -2,6 +2,7 @@ import React from "react";
 import { registerRoot } from "remotion";
 import { Composition } from "remotion";
 import { PlumbIQVideo, calculateMetadata } from "./PlumbIQVideo";
+import { CinematicVideo, calculateCinematicMetadata } from "./CinematicVideo";
 
 const Root: React.FC = () => (
   <>
@@ -9,7 +10,7 @@ const Root: React.FC = () => (
       id="PlumbIQVideo"
       component={PlumbIQVideo}
       calculateMetadata={calculateMetadata}
-      durationInFrames={900}  // fallback — overridden by calculateMetadata via durationInSeconds prop
+      durationInFrames={900}
       fps={30}
       width={1080}
       height={1920}
@@ -24,6 +25,27 @@ const Root: React.FC = () => (
         musicVolume: 0.05,
         durationInSeconds: 30,
         overlays: [],
+      }}
+    />
+    <Composition
+      id="CinematicVideo"
+      component={CinematicVideo}
+      calculateMetadata={calculateCinematicMetadata}
+      durationInFrames={900}
+      fps={30}
+      width={1080}
+      height={1920}
+      defaultProps={{
+        assets: [
+          "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1080",
+          "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1080",
+          "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=1080",
+        ],
+        durationInSeconds: 30,
+        musicVolume: 0.08,
+        captions: [],
+        letterbox: false,
+        aspectRatio: "9:16",
       }}
     />
   </>
