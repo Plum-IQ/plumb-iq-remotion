@@ -16,7 +16,7 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-GRAPH = "https://graph.facebook.com/v20.0"
+GRAPH = "https://graph.facebook.com/v22.0"
 MAX_POLL_ATTEMPTS = 20
 POLL_INTERVAL_SEC = 3
 
