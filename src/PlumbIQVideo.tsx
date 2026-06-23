@@ -3,7 +3,6 @@ import { AbsoluteFill, Audio, Sequence, useVideoConfig, OffthreadVideo, Calculat
 import { TransitionSeries, linearTiming, springTiming } from "@remotion/transitions";
 import { fade } from "@remotion/transitions/fade";
 import { slide } from "@remotion/transitions/slide";
-import { wipe } from "@remotion/transitions/wipe";
 import { flip } from "@remotion/transitions/flip";
 import { PhotoSlide } from "./PhotoSlide";
 import { TextOverlay, MediaOverlay, OverlayData, TextOverlayData, MediaOverlayData } from "./TextOverlay";
@@ -35,7 +34,7 @@ const TRANSITION_DURATION_FRAMES = 9; // 0.3s at 30fps
 function getPresentation(style: string) {
   switch (style) {
     case "slide":     return slide({ direction: "from-right" });
-    case "zoom":      return wipe({ direction: "from-center" });
+    case "zoom":      return fade();
     case "spin":      return flip({ direction: "from-right" });
     case "none":      return fade();
     case "crossfade":
