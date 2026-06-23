@@ -1,7 +1,7 @@
 import React from "react";
 import { useCurrentFrame, useVideoConfig, interpolate, AbsoluteFill, Img, OffthreadVideo } from "remotion";
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// ─── Types ──────────────────────────────────────────────────────────────────────────────
 
 export interface TextOverlayData {
   id: string;
@@ -27,7 +27,7 @@ export interface MediaOverlayData {
 
 export type OverlayData = TextOverlayData | MediaOverlayData;
 
-// ─── TextOverlay ─────────────────────────────────────────────────────────────
+// ─── TextOverlay ───────────────────────────────────────────────────────────────────────────
 // Uses absolute frame timing — no Sequence needed.
 
 export const TextOverlay: React.FC<{ overlay: TextOverlayData }> = ({ overlay }) => {
@@ -41,13 +41,22 @@ export const TextOverlay: React.FC<{ overlay: TextOverlayData }> = ({ overlay })
 
   if (frame < startFrame || frame > endFrame) return null;
 
-  const fadeFrames = Math.min(10, Math.floor((endFrame - startFrame) / 4));
-  const opacity = interpolate(
-    frame,
-    [startFrame, startFrame + fadeFrames, endFrame - fadeFrames, endFrame],
-    [0, 1, 1, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  const duration = endFrame - startFrame;
+  // Guard: zero/negative-duration caption produces a degenerate range — skip it.
+  if (duration <= 0) return null;
+
+  const fadeFrames = Math.min(10, Math.floor(duration / 4));
+  // When fadeFrames===0 the 4-point inputRange would have duplicate values
+  // ([s,s,e,e] or [s,s,s,s]), which interpolate() rejects. Show at full
+  // opacity instead — these are sub-4-frame captions with no room to fade.
+  const opacity = fadeFrames > 0
+    ? interpolate(
+        frame,
+        [startFrame, startFrame + fadeFrames, endFrame - fadeFrames, endFrame],
+        [0, 1, 1, 0],
+        { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+      )
+    : 1;
 
   const positionStyle: React.CSSProperties =
     overlay.position === "top"
@@ -97,7 +106,7 @@ export const TextOverlay: React.FC<{ overlay: TextOverlayData }> = ({ overlay })
   );
 };
 
-// ─── MediaOverlay ─────────────────────────────────────────────────────────────
+// ─── MediaOverlay ────────────────────────────────────────────────────────────────────────────
 // Must be wrapped in <Sequence from={startFrame} durationInFrames={duration}>
 // so that useCurrentFrame() returns 0 at the overlay's start (OffthreadVideo
 // uses the Sequence-relative frame to pick the right source frame).
@@ -120,12 +129,16 @@ export const MediaOverlay: React.FC<{
   const frame = useCurrentFrame(); // 0 = start of this overlay (inside Sequence)
 
   const fadeFrames = Math.min(10, Math.floor(durationInFrames / 4));
-  const opacity = interpolate(
-    frame,
-    [0, fadeFrames, durationInFrames - fadeFrames, durationInFrames],
-    [0, 1, 1, 0],
-    { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
-  );
+  // Same guard as TextOverlay: skip interpolate when fadeFrames===0 to avoid
+  // a non-strictly-increasing inputRange ([0,0,d,d] when durationInFrames<4).
+  const opacity = fadeFrames > 0
+    ? interpolate(
+        frame,
+        [0, fadeFrames, durationInFrames - fadeFrames, durationInFrames],
+        [0, 1, 1, 0],
+        { extrapolateLeft: "clamp", extrapolateRight: "clamp" }
+      )
+    : 1;
 
   const isFull = overlay.corner === "full";
   const widthPct = overlay.widthPct ?? 30;
